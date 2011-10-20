@@ -1,5 +1,6 @@
 # Dolibarr language file - fr_FR - compta
 CHARSET=UTF-8
+DateToNowOnLoadNewBill=Préremplir le champ 'date' avec la date du jour lors de la création d'une facture.
 Accountancy=Compta
 AccountancyCard=Fiche Compta
 Treasury=Tréso

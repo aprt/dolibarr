@@ -79,6 +79,48 @@ $hookmanager->callHooks(array('thirdpartycard','thirdparty_extrafields'));
  * Actions
  */
 
+
+// To link contact with company
+if($conf->global->MAIN_USE_DEFAULT_CONTACTS && $_POST["validate_linking"])
+{
+	$object = new Societe($db);
+	$res=$object->fetch($socid);
+	if ($res < 0) {
+		dol_print_error($db,$object->error); exit;
+	}
+	$res=$object->fetch_optionals($socid,$extralabels);
+
+	$linksMap = (array)json_decode($_POST['links_json']);
+	$contactLinks = $object->liste_contact();
+	$contactLinksCodes = array();
+		
+	foreach ($contactLinks as $contactLink)	
+			$contactLinksCodes[$contactLink['code']] = $contactLink['rowid'];
+		
+	foreach ($linksMap as $code => $contactId)
+	{
+		$upperCode = strtoupper($code);		
+		if(array_key_exists($upperCode, $contactLinksCodes))
+		{
+			if($contactId)
+			{
+				$sql = "UPDATE ".MAIN_DB_PREFIX."element_contact set";
+				$sql.= " fk_socpeople = ".$contactId;
+				$sql.= " where rowid = ".$contactLinksCodes[$upperCode];
+				$resql=$db->query($sql);
+				if (!$resql)				
+					$error++; $errors[] = $db->lasterror();// update 
+			}
+			else 
+				$object->delete_contact($contactLinksCodes[$upperCode]);// remove
+			
+		} else 
+		{
+			if($contactId)$object->add_contact($contactId, $upperCode);//add;
+		}
+	}
+}
+
 $parameters=array('id'=>$socid, 'objcanvas'=>$objcanvas);
 $reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
 $error=$hookmanager->error; $errors=$hookmanager->errors;
@@ -1891,6 +1933,18 @@ else
         if (empty($conf->global->SOCIETE_DISABLE_CONTACTS))
         {
             $result=show_contacts($conf,$langs,$db,$object,$_SERVER["PHP_SELF"].'?socid='.$object->id);
+            
+            
+        /*	if($conf->global->MAIN_USE_DEFAULT_CONTACTS) {
+        		print 	'<form action="$_SERVER["PHP_SELF"]" method="post">'
+	        				.'<table class="noborder" width="100%">'
+	        					.'<tr class="liste_titre">'
+	        						.'<td>'.$langs->trans('Name').'</td>'
+	        						.'<td>'.$langs->trans('cTypeDfltCtcs').'</td>'
+	        					.'</tr>'
+	        				.'</table>'
+        				.'</form>';
+        	}*/
         }
 
         // Projects list

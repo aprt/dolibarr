@@ -1,5 +1,9 @@
 # Dolibarr language file - fr_FR - companies
 CHARSET=UTF-8
+UseDefaultContacts=Permettre la définition de contact par défaut pour chaque société afin de remplir automatiquement les contacts des documents(factures, commandes, etc...).
+RoleToLink=-Choisir un rôle-
+SaveLinks=Enregistrer les rôles
+cTypeDfltCtcs=Rôle par défaut du contact client:
 ErrorCompanyNameAlreadyExists=Le nom de société %s existe déjà. Veuillez en choisir un autre.
 ErrorPrefixAlreadyExists=Le préfixe %s existe déjà. Veuillez en choisir un autre.
 ErrorSetACountryFirst=Définissez d'abord le pays

@@ -195,6 +195,21 @@ if ($action == 'setprofid')
 	}
 }
 
+//Use default contacts (able contacts type setting)
+if ($action == 'setusedefaultcontacts')
+{
+	$usedefaultcontacts = GETPOST("usedefaultcontacts");
+
+	if (dolibarr_set_const($db, 'MAIN_USE_DEFAULT_CONTACTS',$usedefaultcontacts,'chaine',0,'',$conf->entity) > 0)
+	{
+		Header("Location: ".$_SERVER["PHP_SELF"]);
+		exit;
+	}
+	else
+	{
+		dol_print_error($db);
+	}
+}
 
 /*
  * 	View
@@ -566,6 +581,25 @@ print '<tr class="liste_titre">';
 print "<td>".$langs->trans("Parameters")."</td>\n";
 print '<td align="right" width="60">'.$langs->trans("Value").'</td>'."\n";
 print '<td width="80">&nbsp;</td></tr>'."\n";
+
+// Use default contacts
+$var=! $var;
+$constStatus = $conf->global->MAIN_USE_DEFAULT_CONTACTS;
+if($constStatus) {
+	$buttonStatus = $langs->trans('Activated');
+	$switchStatus = 'switch_on';
+} 
+else {
+	$buttonStatus =  $langs->trans('Disabled');
+	$switchStatus = 'switch_off';	
+} 
+print '<tr '.$bc[$var].'><td>';
+print $langs->trans("UseDefaultContacts");
+print '</td>';
+print '<td colspan="2" align="center"><a href="'.$_SERVER['PHP_SELF'].'?action=setusedefaultcontacts&amp;usedefaultcontacts='.!$constStatus.'">';
+print img_picto($langs->trans($buttonStatus),$switchStatus);
+print '</a></td>';
+print "</tr>\n";
 
 // Utilisation formulaire Ajax sur choix societe
 $var=!$var;

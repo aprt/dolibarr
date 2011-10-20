@@ -1,5 +1,6 @@
 # Dolibarr language file - en_US - compta
 CHARSET=UTF-8
+DateToNowOnLoadNewBill=Prefill the 'date' field with current date on bills creation
 Accountancy=Accountancy
 AccountancyCard=Accountancy card
 Treasury=Treasury

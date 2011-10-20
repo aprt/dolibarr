@@ -83,6 +83,30 @@ $hookmanager->callHooks(array('invoicecard'));
 /*                     Actions                                                */
 /******************************************************************************/
 
+// Check for unsetted default contact and set them
+// You can copy and paste this If to extends the default contacts to other c_typed object (commands, etc..)
+if ($conf->global->MAIN_USE_DEFAULT_CONTACTS && $id)
+{
+	$objectToLink = new Facture($db);	//change type there to do same with other kind of item
+	$objectToLink->fetch($id);
+	$objectToLink->fetch_thirdparty();
+	$linksTypes = $objectToLink->liste_type_contact('external', 'code', 1);
+	$existingLinks = $objectToLink->liste_contact();
+	$existingDefaultLinks = $objectToLink->thirdparty->liste_contact();
+	
+	$existingLinksIndex = array();
+	foreach($existingLinks as $existingLink) 
+			$existingLinksIndex[$existingLink['code']] = $existingLink['id']; 
+	$existingDefaultLinksIndex = array();
+	foreach($existingDefaultLinks as $existingDefaultLink) 
+			$existingDefaultLinksIndex[$existingDefaultLink['code']] = $existingDefaultLink['id'];
+	
+	// Get an array associating the unsetted keys of this object with the default contacts setted for this society, and loop to set these links
+	$linksToSet = array_intersect_key($existingDefaultLinksIndex, array_diff_key($linksTypes, $existingLinksIndex));
+	foreach($linksToSet as $linkToSetCode => $linkToSetContact)
+			$objectToLink->add_contact($linkToSetContact, $linkToSetCode);
+}
+
 $parameters=array('socid'=>$socid);
 $reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
 

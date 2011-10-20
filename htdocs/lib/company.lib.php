@@ -492,7 +492,7 @@ function show_contacts($conf,$langs,$db,$object,$backtopage='')
     global $bc;
 
     $i=-1;
-
+    
     $contactstatic = new Contact($db);
 
     if ($conf->clicktodial->enabled)
@@ -510,10 +510,33 @@ function show_contacts($conf,$langs,$db,$object,$backtopage='')
     print "\n";
     print_fiche_titre($langs->trans("ContactsForCompany"),$buttoncreate,'');
 
+   	if($conf->global->MAIN_USE_DEFAULT_CONTACTS)
+   	{
+   		print '<script type="text/javascript" src="'.DOL_URL_ROOT.'/societe/js/contactLinking.js" ></script>';
+   		print '<form action="'.DOL_URL_ROOT.'/societe/soc.php?socid='.$object->id.'" method="post">';    	
+   	}
+    
     print "\n".'<table class="noborder" width="100%">'."\n";
 
     print '<tr class="liste_titre"><td>'.$langs->trans("Name").'</td>';
-    print '<td>'.$langs->trans("Poste").'</td><td>'.$langs->trans("Tel").'</td>';
+    print '<td>'.$langs->trans("Poste").'</td>';
+    
+    if($conf->global->MAIN_USE_DEFAULT_CONTACTS) { 
+    	// Prepare   	  	 
+    	$socCTypesContact = $object->liste_type_contact('external','code',1);
+    	$toJsonLinks = array();    	
+    	$options = '<option value="0">'.$langs->trans('RoleToLink').'</option>'; 	
+		foreach ($socCTypesContact as $socCTypeCode => $socCTypeLib)
+		{
+			$options.= '<option value="'.strtolower($socCTypeCode).'">'.$langs->trans($socCTypeLib).'</option>';
+			$toJsonLinks[strtolower($socCTypeCode)] = "";
+		}
+		// Print
+		print '<td>'.$langs->trans("cTypeDfltCtcs").'</td>';
+    	print '<td align="center" ><select name="select_c_type_contact" class="flat" >'.$options.'</select></td>';    	 
+    }
+    
+    print '<td>'.$langs->trans("Tel").'</td>';
     print '<td>'.$langs->trans("Fax").'</td><td>'.$langs->trans("EMail").'</td>';
     print "<td>&nbsp;</td>";
     if ($conf->agenda->enabled && $user->rights->agenda->myactions->create)
@@ -549,8 +572,25 @@ function show_contacts($conf,$langs,$db,$object,$backtopage='')
             print $contactstatic->getNomUrl(1);
             print '</td>';
 
-            print '<td>'.$obj->poste.'</td>';
-
+            print '<td>'.$obj->poste.'</td>';	
+            
+            if($conf->global->MAIN_USE_DEFAULT_CONTACTS)
+            {            	
+            	$defaultContacts = $object->liste_contact();
+            	$libsTypeContact = array();
+            	foreach ($defaultContacts as $defaultContact)            		
+            			if($defaultContact['id'] == $contactstatic->id)
+		            	{
+		            		$toJsonLinks[strtolower($defaultContact['code'])] = $contactstatic->id;
+		            		$libsTypeContact[] = '<p id="'.strtolower($defaultContact['code']).'" style="margin: 0 0 0 0;">'.$defaultContact['libelle'].'</p>';
+		            	}
+            	print 	'<td id="td_links_'.$contactstatic->id.'">'.implode('', $libsTypeContact).'</td>'
+            	 		.'<td align="center">'
+            	 			.'<input id="add_'.$contactstatic->id.'" class="button" type="button" name="add_link" value="'.$langs->trans('Add').'" />'
+            				.'<input id="rem_'.$contactstatic->id.'" class="button" type="button" name="remove_link" value="'.$langs->trans('Remove').'" />'
+            			.'</td>';            	
+            }
+            
             // Lien click to dial
             print '<td>';
             print dol_print_phone($obj->phone,$obj->pays_code,$obj->rowid,$object->id,'AC_TEL');
@@ -588,7 +628,14 @@ function show_contacts($conf,$langs,$db,$object,$backtopage='')
         //print "</tr>\n";
     }
     print "\n</table>\n";
-
+    
+   	if($conf->global->MAIN_USE_DEFAULT_CONTACTS)
+   	{
+	   		print 	'<input type="hidden" name="links_json" value="'.htmlentities(json_encode($toJsonLinks)).'"/>'
+	   				.($num ? '<div class="tabsAction"><input class="butAction" type="submit" name="validate_linking" value="'.$langs->trans('SaveLinks').'"/></div>' : '')
+   				.'</form>';
+   	}
+    
     print "<br>\n";
 
     return $i;

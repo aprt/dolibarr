@@ -264,6 +264,24 @@ if ($action == 'set_FACTURE_FREE_TEXT')
     }
 }
 
+if ($action == 'setdatetonowonloadnewbill')
+{
+	$datetonow = GETPOST("datetonowonloadnewbill");
+	
+    $res = dolibarr_set_const($db, "MAIN_DATETONOW_ONLOAD_NEWBILL",$datetonow,'chaine',0,'',$conf->entity);
+    
+	if (! $res > 0) $error++;
+
+ 	if (! $error)
+    {
+        $mesg = "<font class=\"ok\">".$langs->trans("SetupSaved")."</font>";
+    }
+    else
+    {
+        $mesg = "<font class=\"error\">".$langs->trans("Error")."</font>";
+    }
+}
+
 if ($action == 'setforcedate')
 {
 	$forcedate = GETPOST("forcedate");
@@ -739,6 +757,20 @@ print '<td align="center" width="60">'.$langs->trans("Value").'</td>';
 print '<td width="80">&nbsp;</td>';
 print "</tr>\n";
 $var=true;
+
+// Auto set date to now on bills creation
+$var=! $var;
+print '<form action="'.$_SERVER["PHP_SELF"].'" method="post">';
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="setdatetonowonloadnewbill">';
+print '<tr '.$bc[$var].'><td>';
+print $langs->trans("DateToNowOnLoadNewBill");
+print '</td><td width="60" align="center">';
+print $html->selectyesno("datetonowonloadnewbill",$conf->global->MAIN_DATETONOW_ONLOAD_NEWBILL,1);
+print '</td><td align="right">';
+print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
+print "</td></tr>\n";
+print '</form>';
 
 // Force date validation
 $var=! $var;

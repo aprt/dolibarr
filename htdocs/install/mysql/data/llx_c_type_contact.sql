@@ -74,3 +74,12 @@ insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) v
 insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (181, 'project_task',  'internal', 'CONTRIBUTOR', 'Intervenant', 1);
 insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (190, 'project_task',  'external', 'TASKEXECUTIVE', 'Responsable', 1);
 insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (191, 'project_task',  'external', 'CONTRIBUTOR', 'Intervenant', 1);
+
+insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (220, 'societe',  'external', 'CUSTOMER', 'Suivi de contrat', 1);
+insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (221, 'societe',  'external', 'BILLING', 'Facturation', 1);
+insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (222, 'societe',  'external', 'SHIPPING', 'Livraison', 1);
+insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (223, 'societe',  'external', 'SALESREPSIGN', 'Signataire de contrat', 1);
+insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (224, 'societe',  'external', 'SERVICE', 'Prestation', 1);
+insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (225, 'societe',  'external', 'CONTRIBUTOR', 'Intervenant', 1);
+insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (226, 'societe',  'external', 'PROJECTLEADER', 'Chef de projet', 1);
+insert into llx_c_type_contact(rowid, element, source, code, libelle, active ) values (227, 'societe',  'external', 'TASKEXECUTIVE', 'Responsable exécutif', 1);
